@@ -1,6 +1,8 @@
 package runner
 
 import (
+	"sort"
+
 	"github.com/mrwonko/fdc-hackerthon-2019/lib/gamemath"
 	"github.com/mrwonko/fdc-hackerthon-2019/lib/rules"
 )
@@ -44,17 +46,26 @@ type (
 )
 
 func (gs gamestate) Preprocess() *rules.Gamestate {
+	// FIXME: this assumes 2 players
 	playerIDLookup := map[playerID]rules.PlayerID{
 		0: rules.NeutralPlayer,
 	}
+	playerIDs := []int{} // as int for easier sorting
 	for i := range gs.Players {
 		p := &gs.Players[i]
+		playerIDs = append(playerIDs, int(p.ID))
 		if p.ItsMe {
 			playerIDLookup[p.ID] = rules.MyPlayer
 		} else {
 			playerIDLookup[p.ID] = rules.EnemyPlayer
 		}
 	}
+	sort.Ints(playerIDs)
+	turnOrder := make([]rules.PlayerID, len(playerIDs))
+	for i, id := range playerIDs {
+		turnOrder[i] = playerIDLookup[playerID(id)]
+	}
+
 	planetIDLookup := make(map[rules.PlanetID]int, len(gs.Planets))
 	planets := make([]rules.Planet, len(gs.Planets))
 	for i := range gs.Planets {
@@ -81,6 +92,7 @@ func (gs gamestate) Preprocess() *rules.Gamestate {
 		}
 	}
 	return &rules.Gamestate{
+		TurnOrder: turnOrder,
 		Round:     gs.Round,
 		MaxRounds: gs.MaxRounds,
 		Planets:   planets,

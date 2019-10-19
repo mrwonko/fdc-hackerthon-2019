@@ -21,6 +21,7 @@ const (
 	server            = "rps.vhenne.de:6000"
 	maxTimePerRound   = 2500 * time.Millisecond // limit 3s, but we have some lag
 	logServerMessages = false
+	logJSON           = false
 )
 
 type Player struct {
@@ -95,10 +96,13 @@ func Main(player *Player) {
 					round-- // this round doesn't count
 					continue
 				}
+				if logJSON {
+					fmt.Printf("%s", message)
+				}
 				stop := func() bool {
 					ctx, cancel := context.WithTimeout(context.Background(), maxTimePerRound)
 					defer cancel()
-					var gs gamestate
+					var gs Gamestate
 					err = json.Unmarshal(message, &gs)
 					if err != nil {
 						log.Printf("round %d: error unmarshaling gamestate: %s", round, err)

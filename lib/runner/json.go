@@ -10,17 +10,17 @@ import (
 type (
 	playerID int
 
-	gamestate struct {
+	Gamestate struct {
 		GameOver  bool      `json:"game_over"`
 		Winner    *playerID `json:"winner"`
 		Round     int       `json:"round"`
 		MaxRounds int       `json:"max_rounds"` // 500, usually
-		Fleets    []fleet   `json:"fleets"`
+		Fleets    []Fleet   `json:"fleets"`
 		Players   []player  `json:"players"`
 		Planets   []planet  `json:"planets"`
 	}
 
-	fleet struct {
+	Fleet struct {
 		ID     rules.FleetID   `json:"ID"`
 		Owner  playerID        `json:"owner_id"`
 		Origin rules.PlanetID  `json:"origin"`
@@ -45,7 +45,7 @@ type (
 	}
 )
 
-func (gs gamestate) Preprocess() *rules.Gamestate {
+func (gs Gamestate) Preprocess() *rules.Gamestate {
 	// FIXME: this assumes 2 players
 	playerIDLookup := map[playerID]rules.PlayerID{
 		0: rules.NeutralPlayer,

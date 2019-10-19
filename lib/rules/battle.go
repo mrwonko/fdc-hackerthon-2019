@@ -62,7 +62,9 @@ func (fsc fShipCount) ShipCount() ShipCount {
 func (fsc fShipCount) Total() float64 {
 	var sum float64
 	for _, c := range fsc {
-		sum += c
+		if c > 0 { // some weirdos send negative fleets
+			sum += c
+		}
 	}
 	return sum
 }

@@ -30,7 +30,7 @@ type Player struct {
 }
 
 type Tick struct {
-	Gamestate rules.Gamestate
+	Gamestate *rules.Gamestate
 	Ctx       context.Context // with deadline
 	Move      chan<- rules.Move
 }
@@ -98,27 +98,29 @@ func Main(player *Player) {
 				stop := func() bool {
 					ctx, cancel := context.WithTimeout(context.Background(), maxTimePerRound)
 					defer cancel()
-					moveChan := make(chan rules.Move, 1)
-					tick := Tick{
-						Move: moveChan,
-					}
-					err = json.Unmarshal(message, &tick.Gamestate)
+					var gs gamestate
+					err = json.Unmarshal(message, &gs)
 					if err != nil {
 						log.Printf("round %d: error unmarshaling gamestate: %s", round, err)
 						return true
 					}
 					if round == 0 {
-						log.Printf("starting game with players %v", tick.Gamestate.Players)
+						log.Printf("starting game with players %v", gs.Players)
 					}
-					if tick.Gamestate.GameOver {
-						if tick.Gamestate.Winner != nil {
-							log.Printf("round %d: player %d won", round, *tick.Gamestate.Winner)
+					if gs.GameOver {
+						if gs.Winner != nil {
+							log.Printf("round %d: player %d won", round, *gs.Winner)
 						} else {
 							log.Printf("round %d: draw", round)
 						}
 						return true
 					}
-					ticks <- &tick
+					moveChan := make(chan rules.Move, 1)
+					ticks <- &Tick{
+						Ctx:       ctx,
+						Gamestate: gs.Preprocess(),
+						Move:      moveChan,
+					}
 					var move rules.Move
 					select {
 					case m, ok := <-moveChan:

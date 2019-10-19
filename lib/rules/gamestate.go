@@ -1,6 +1,14 @@
 package rules
 
-const numShipTypes = 3
+import "github.com/mrwonko/fdc-hackerthon-2019/lib/gamemath"
+
+const (
+	numShipTypes = 3
+
+	NeutralPlayer PlayerID = -1
+	MyPlayer      PlayerID = 0
+	EnemyPlayer   PlayerID = 1
+)
 
 type (
 	PlayerID  int
@@ -9,40 +17,27 @@ type (
 	ShipCount [numShipTypes]int
 
 	Gamestate struct {
-		GameOver  bool      `json:"game_over"`
-		Winner    *PlayerID `json:"winner"`
-		Round     int       `json:"round"`
-		MaxRounds int       `json:"max_rounds"` // 500, usually
-		Fleets    []Fleet   `json:"fleets"`
-		Players   []Player  `json:"players"`
-		Planets   []Planet  `json:"planets"`
+		// we don't care about game over / winner
+		Round     int
+		MaxRounds int // 500, usually
+		Fleets    []Fleet
+		Planets   []Planet
 	}
 
 	Fleet struct {
-		ID     FleetID   `json:"ID"`
-		Owner  PlayerID  `json:"owner_id"`
-		Origin PlanetID  `json:"origin"`
-		Target PlanetID  `json:"target"`
-		Ships  ShipCount `json:"ships"`
-		ETA    int       `json:"eta"` // in rounds
-	}
-
-	Player struct {
-		ID    PlayerID `json:"id"`
-		Name  string   `json:"name"`
-		ItsMe bool     `json:"itsme"`
+		ID          FleetID
+		Owner       PlayerID
+		OriginIndex int
+		TargetIndex int
+		Ships       ShipCount
+		ETA         int // in rounds
 	}
 
 	Planet struct {
-		ID         PlanetID  `json:"id"`
-		Owner      PlayerID  `json:"owner_id"`
-		X          int       `json:"x"`
-		Y          int       `json:"y"`
-		Ships      ShipCount `json:"ships"`
-		Production ShipCount `json:"production"`
+		ID         PlanetID
+		Owner      PlayerID
+		Coords     gamemath.Point
+		Ships      ShipCount
+		Production ShipCount
 	}
-)
-
-const (
-	Neutral PlayerID = 0
 )

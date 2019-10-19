@@ -37,7 +37,7 @@ type (
 		X          int       `json:"x"`
 		Y          int       `json:"y"`
 		Ships      ShipCount `json:"ships"`
-		Production ShipCount `json:"ships"`
+		Production ShipCount `json:"production"`
 	}
 )
 

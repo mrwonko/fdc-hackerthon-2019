@@ -1,10 +1,12 @@
 package rules
 
+const numShipTypes = 3
+
 type (
 	PlayerID  int
 	PlanetID  int
 	FleetID   int
-	ShipCount [3]int
+	ShipCount [numShipTypes]int
 
 	Gamestate struct {
 		GameOver  bool      `json:"game_over"`

@@ -18,8 +18,9 @@ import (
 )
 
 const (
-	server          = "rps.vhenne.de:6000"
-	maxTimePerRound = 2500 * time.Millisecond // limit 3s, but we have some lag
+	server            = "rps.vhenne.de:6000"
+	maxTimePerRound   = 2500 * time.Millisecond // limit 3s, but we have some lag
+	logServerMessages = false
 )
 
 type Player struct {
@@ -88,6 +89,9 @@ func Main(player *Player) {
 					return
 				}
 				if len(message) == 0 || message[0] != '{' { // ignore non-gamestate messages
+					if logServerMessages {
+						log.Printf("round %d: server message: %s", round, message)
+					}
 					round-- // this round doesn't count
 					continue
 				}
